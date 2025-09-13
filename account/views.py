@@ -25,17 +25,15 @@ class ProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Hər zaman current user üçün queryset qaytar
-        profile, created = Profile.objects.get_or_create(user=self.request.user)
-        return Profile.objects.filter(pk=profile.pk)
+        profile, _ = Profile.objects.get_or_create(user=self.request.user)
+        return Profile.objects.filter(pk=profile.pk).prefetch_related('user__posts')
 
     def perform_update(self, serializer):
-        # update zamanı user sahəsini qoruyuruq
         serializer.save(user=self.request.user)
 
 
 class RegistrationView(APIView):
-    permission_classes = [permissions.AllowAny]  # anonim istifadəçi üçün açıqdır
+    permission_classes = [permissions.AllowAny] 
 
     def post(self, request, *args, **kwargs):
         serializer = RegistrationSerializer(data=request.data)

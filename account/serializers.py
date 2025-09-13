@@ -1,30 +1,28 @@
 from rest_framework import serializers
 from .models import Profile, User
-
+from content.serializers import PostSerializer
 
 class ProfileSerializer(serializers.ModelSerializer):
-    # User fields
     email = serializers.EmailField(source='user.email', required=True)
     first_name = serializers.CharField(source='user.first_name', required=False, allow_blank=True)
     last_name = serializers.CharField(source='user.last_name', required=False, allow_blank=True)
+    posts = PostSerializer(many=True, read_only=True, source='user.posts')
 
     class Meta:
         model = Profile
         fields = [
             'id', 'email', 'first_name', 'last_name',
             'phone_number', 'birth_date', 'profile_picture',
-            'country', 'organization', 'position'
+            'country', 'organization', 'position', 'posts'
         ]
         read_only_fields = ['id']
 
     def update(self, instance, validated_data):
-        # Update user fields
         user_data = validated_data.pop('user', {})
         for attr, value in user_data.items():
             setattr(instance.user, attr, value)
         instance.user.save()
 
-        # Update profile fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
