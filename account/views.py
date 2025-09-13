@@ -1,0 +1,48 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import viewsets, permissions
+from .models import Profile
+from .serializers import ProfileSerializer, RegistrationSerializer
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"detail": "Logout successful"}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Hər zaman current user üçün queryset qaytar
+        profile, created = Profile.objects.get_or_create(user=self.request.user)
+        return Profile.objects.filter(pk=profile.pk)
+
+    def perform_update(self, serializer):
+        # update zamanı user sahəsini qoruyuruq
+        serializer.save(user=self.request.user)
+
+
+class RegistrationView(APIView):
+    permission_classes = [permissions.AllowAny]  # anonim istifadəçi üçün açıqdır
+
+    def post(self, request, *args, **kwargs):
+        serializer = RegistrationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response({
+            "message": "User and profile created successfully",
+            "user_id": user.id,
+            "username": user.username
+        }, status=status.HTTP_201_CREATED)
