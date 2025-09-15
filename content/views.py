@@ -5,13 +5,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .filters import PostFilter
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
+
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly] 
 
 class BasicPagination(PageNumberPagination):
-    page_size = 1
+    page_size = 6
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
