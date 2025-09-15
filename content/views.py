@@ -41,15 +41,15 @@ class PostViewSet(viewsets.ModelViewSet):
         is_active_param = self.request.query_params.get('is_active')
 
         if is_active_param is None:
-            return queryset.filter(is_active=True)
+            return queryset.filter(is_active=True).order_by('-created_date')
         param_lower = is_active_param.lower()
         
         if param_lower == 'true':
-            return queryset.filter(is_active=True)
+            return queryset.filter(is_active=True).order_by('-created_date')
         elif param_lower == 'false':
-            return queryset.filter(is_active=False)
+            return queryset.filter(is_active=False).order_by('-created_date')
         elif param_lower == 'null' or param_lower == 'unknown':
-            return queryset.filter(is_active__isnull=True)
+            return queryset.filter(is_active__isnull=True).order_by('-created_date')
         return queryset.filter(is_active=True).order_by('-created_date')
 
 class ReviewViewSet(viewsets.ModelViewSet):
