@@ -12,7 +12,7 @@ class TagViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly] 
 
 class BasicPagination(PageNumberPagination):
-    page_size = 6
+    page_size = 3
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
