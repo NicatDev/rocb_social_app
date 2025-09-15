@@ -25,11 +25,11 @@ class PostViewSet(viewsets.ModelViewSet):
     filterset_class = PostFilter
 
     def perform_create(self, serializer):
-        if(self.request.user.is_admin){
-            serializer.save(user=self.request.user,is_active=True)
-        }else{
-             serializer.save(user=self.request.user)
-        }
+        if self.request.user.is_admin:
+            serializer.save(user=self.request.user, is_active=True)
+        else:
+            serializer.save(user=self.request.user)
+
         
     
     def get_queryset(self):
