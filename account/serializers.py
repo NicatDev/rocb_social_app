@@ -12,7 +12,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
     first_name = serializers.CharField(source='user.first_name', required=False, allow_blank=True)
     last_name = serializers.CharField(source='user.last_name', required=False, allow_blank=True)
-    posts = PostSerializer(many=True, read_only=True, source='user.posts')
+
 
     class Meta:
         model = Profile
