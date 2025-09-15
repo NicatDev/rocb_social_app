@@ -45,7 +45,7 @@ class PostViewSet(viewsets.ModelViewSet):
             return queryset.filter(is_active=False)
         elif param_lower == 'null' or param_lower == 'unknown':
             return queryset.filter(is_active__isnull=True)
-        return queryset.filter(is_active=True)
+        return queryset.filter(is_active=True).order_by('-created_date')
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
