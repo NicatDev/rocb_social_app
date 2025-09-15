@@ -26,7 +26,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         profile, _ = Profile.objects.get_or_create(user=self.request.user)
-        return Profile.objects.filter(pk=profile.pk).prefetch_related('user__posts')
+        return Profile.objects.filter(pk=profile.pk)
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
