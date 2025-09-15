@@ -1,6 +1,12 @@
+import datetime
+import re
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from .models import Profile, User
 from content.serializers import PostSerializer
+
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
@@ -30,7 +36,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     
     def get_queryset(self):
      return Profile.objects.filter(user=self.request.user)
-    
+ 
 class RegistrationSerializer(serializers.Serializer):
     # User fields
     username = serializers.CharField()
@@ -47,17 +53,49 @@ class RegistrationSerializer(serializers.Serializer):
     organization = serializers.CharField(required=False, allow_blank=True)
     position = serializers.CharField(required=False, allow_blank=True)
 
+    # --- VALIDATIONS ---
+
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("This username is already taken.")
+        return value
+
+    def validate_email(self, value):
+        if value and User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already registered.")
+        return value
+
+    def validate_password(self, value):
+        validate_password(value)  # Django password validators
+        return value
+
+    def validate_birth_date(self, value):
+        if value and value > datetime.date.today():
+            raise serializers.ValidationError("Birth date cannot be in the future.")
+        return value
+
+    def validate_phone_number(self, value):
+        if value and not re.match(r"^\+?\d{7,15}$", value):
+            raise serializers.ValidationError("Enter a valid phone number.")
+        return value
+
+    def validate_country(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("Country is required.")
+        return value
+
+    # --- CREATE USER & PROFILE ---
+
     def create(self, validated_data):
-        # User yarat
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
             email=validated_data.get('email', ''),
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', ''),
-            is_active=True,      
-            is_staff=True,      
-            is_superuser=True        
+            is_active=True,
+            is_staff=True,
+            is_superuser=True
         )
 
         Profile.objects.create(

@@ -33,7 +33,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 
 class RegistrationView(APIView):
-    permission_classes = [permissions.AllowAny] 
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         serializer = RegistrationSerializer(data=request.data)
