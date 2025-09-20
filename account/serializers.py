@@ -25,14 +25,10 @@ class ProfileSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # User məlumatlarını validated_data içindən al
         user_data = validated_data.pop('user', {})
-        if isinstance(user_data, dict):
-            for attr, value in user_data.items():
-                setattr(instance.user, attr, value)
-        else:
-            # DRF artıq user obyektini verir, onda sadəcə email/first_name/last_name update et
-            instance.user.email = validated_data.get('email', instance.user.email)
-            instance.user.first_name = validated_data.get('first_name', instance.user.first_name)
-            instance.user.last_name = validated_data.get('last_name', instance.user.last_name)
+
+        instance.user.email = validated_data.get('email', instance.user.email)
+        instance.user.first_name = validated_data.get('first_name', instance.user.first_name)
+        instance.user.last_name = validated_data.get('last_name', instance.user.last_name)
 
         instance.user.save()
 
