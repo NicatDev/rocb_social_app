@@ -23,16 +23,25 @@ class ProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
     def update(self, instance, validated_data):
+        # User məlumatlarını validated_data içindən al
         user_data = validated_data.pop('user', {})
-        for attr, value in user_data.items():
-            setattr(instance.user, attr, value)
+        if isinstance(user_data, dict):
+            for attr, value in user_data.items():
+                setattr(instance.user, attr, value)
+        else:
+            # DRF artıq user obyektini verir, onda sadəcə email/first_name/last_name update et
+            instance.user.email = validated_data.get('email', instance.user.email)
+            instance.user.first_name = validated_data.get('first_name', instance.user.first_name)
+            instance.user.last_name = validated_data.get('last_name', instance.user.last_name)
+
         instance.user.save()
 
+        # Profile sahələrini update et
         for attr, value in validated_data.items():
-            setattr(instance, attr, value)
+            if attr not in ['email', 'first_name', 'last_name']:
+                setattr(instance, attr, value)
         instance.save()
         return instance
-    
     def get_queryset(self):
         return Profile.objects.filter(user=self.request.user)
  
