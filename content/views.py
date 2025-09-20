@@ -50,7 +50,7 @@ class PostViewSet(viewsets.ModelViewSet):
             return queryset.filter(is_active__isnull=True).order_by('-created_date')
         
         own_param = self.request.query_params.get('own')
-        if own_param and own_param.lower() == 'true':
+        if own_param or own_param.lower() == 'true':
             queryset = queryset.filter(user=self.request.user)
 
         return queryset.filter(is_active=True).order_by('-created_date')
