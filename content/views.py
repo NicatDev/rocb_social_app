@@ -29,8 +29,6 @@ class PostViewSet(viewsets.ModelViewSet):
             serializer.save(user=self.request.user, is_active=True)
         else:
             serializer.save(user=self.request.user)
-
-        
     
     def get_queryset(self):
         queryset = super().get_queryset().annotate(
@@ -50,6 +48,11 @@ class PostViewSet(viewsets.ModelViewSet):
             return queryset.filter(is_active=False).order_by('-created_date')
         elif param_lower == 'null' or param_lower == 'unknown':
             return queryset.filter(is_active__isnull=True).order_by('-created_date')
+        
+        own_param = self.request.query_params.get('own')
+        if own_param and own_param.lower() == 'true':
+            queryset = queryset.filter(user=self.request.user)
+
         return queryset.filter(is_active=True).order_by('-created_date')
 
 class ReviewViewSet(viewsets.ModelViewSet):
