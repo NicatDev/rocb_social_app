@@ -13,7 +13,6 @@ class ProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name', required=False, allow_blank=True)
     last_name = serializers.CharField(source='user.last_name', required=False, allow_blank=True)
 
-
     class Meta:
         model = Profile
         fields = [
@@ -22,6 +21,16 @@ class ProfileSerializer(serializers.ModelSerializer):
             'country', 'organization', 'position'
         ]
         read_only_fields = ['id']
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user', {})
+        user = self.context['request'].user  # use authenticated user
+        for attr, value in user_data.items():
+            setattr(user, attr, value)
+        user.save()
+
+        profile = Profile.objects.create(user=user, **validated_data)
+        return profile
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
@@ -33,9 +42,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
-    
-    def get_queryset(self):
-     return Profile.objects.filter(user=self.request.user)
+
  
 class RegistrationSerializer(serializers.Serializer):
     # User fields
