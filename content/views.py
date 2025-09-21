@@ -1,5 +1,5 @@
 from .models import Post, Review, Like, Tag
-from .serializers import PostSerializer, ReviewSerializer, LikeSerializer, TagSerializer
+from .serializers import PostSerializer,PostApproveSerializer, ReviewSerializer, LikeSerializer, TagSerializer
 from rest_framework import viewsets, permissions, serializers
 from django_filters.rest_framework import DjangoFilterBackend 
 from .filters import PostFilter
@@ -82,3 +82,9 @@ class LikeViewSet(viewsets.ModelViewSet):
         if 'post_pk' in self.kwargs:
             return self.queryset.filter(post_id=self.kwargs['post_pk'])
         return super().get_queryset()
+    
+
+class PostApproveViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostApproveSerializer
+    permission_classes = [permissions.IsAdminUser]

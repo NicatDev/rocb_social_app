@@ -35,3 +35,12 @@ class PostSerializer(serializers.ModelSerializer):
             'id', 'user', 'content', 'image', 'file', 'is_active', 
             'created_date', 'tags', 'reviews', 'review_count', 'like_count'
         ]
+
+
+class PostApproveSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    class Meta:
+        model = Post
+        fields = [
+            'id', 'is_active', 'user', 'content', 'image'
+        ]
