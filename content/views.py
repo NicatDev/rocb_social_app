@@ -85,6 +85,8 @@ class LikeViewSet(viewsets.ModelViewSet):
     
 
 class PostApproveViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
     serializer_class = PostApproveSerializer
     permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        return Post.objects.filter(is_active__isnull=True)
