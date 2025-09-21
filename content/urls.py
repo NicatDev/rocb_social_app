@@ -6,7 +6,7 @@ from .views import (
 
 router = routers.DefaultRouter()
 router.register(r'posts', PostViewSet, basename='post')
-router.register(r'postsApprove', PostApproveViewSet, basename='post')
+router.register(r'postsApprove', PostApproveViewSet, basename='postApprove')
 router.register(r'tags', TagViewSet, basename='tag')
 router.register(r'reviews', ReviewViewSet, basename='review') 
 router.register(r'likes', LikeViewSet, basename='like') 
