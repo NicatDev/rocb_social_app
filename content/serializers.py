@@ -25,7 +25,7 @@ class PostSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
     reviews = ReviewSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
-    
+    liked_by_user = serializers.SerializerMethodField()
     review_count = serializers.IntegerField(read_only=True)
     like_count = serializers.IntegerField(read_only=True)
 
