@@ -39,10 +39,12 @@ class PostSerializer(serializers.ModelSerializer):
     
 
     def get_liked_by_user(self, obj):
-        request = self.context.get('request')  # get request from context
+        request = self.context.get('request')
         if request and request.user.is_authenticated:
-            return obj.likes.filter(user=request.user).exists()  # check if current user liked
-        return False
+            like = obj.likes.filter(user=request.user).first()  # get Like object if exists
+            if like:
+                return like.id  # return id for unlike
+        return None
 
 
 class PostApproveSerializer(serializers.ModelSerializer):
