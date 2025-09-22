@@ -29,12 +29,20 @@ class PostSerializer(serializers.ModelSerializer):
     review_count = serializers.IntegerField(read_only=True)
     like_count = serializers.IntegerField(read_only=True)
 
+
     class Meta:
         model = Post
         fields = [
             'id', 'user', 'content', 'image', 'file', 'is_active', 
-            'created_date', 'tags', 'reviews', 'review_count', 'like_count'
+            'created_date', 'tags', 'reviews', 'review_count', 'like_count', 'liked_by_user'
         ]
+    
+
+    def get_liked_by_user(self, obj):
+        request = self.context.get('request')  # get request from context
+        if request and request.user.is_authenticated:
+            return obj.likes.filter(user=request.user).exists()  # check if current user liked
+        return False
 
 
 class PostApproveSerializer(serializers.ModelSerializer):
