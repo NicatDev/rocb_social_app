@@ -35,25 +35,31 @@ class PostViewSet(viewsets.ModelViewSet):
             review_count=Count('reviews', distinct=True),
             like_count=Count('likes', distinct=True)
         )
-        
+
+        # Əgər detail əməliyyatdısa, filter etmə
+        if self.action in ["retrieve", "update", "partial_update", "destroy"]:
+            return queryset
+
         is_active_param = self.request.query_params.get('is_active')
 
         if is_active_param is None:
             return queryset.filter(is_active=True).order_by('-created_date')
+
         param_lower = is_active_param.lower()
-        
+
         if param_lower == 'true':
             return queryset.filter(is_active=True).order_by('-created_date')
         elif param_lower == 'false':
             return queryset.filter(is_active=False).order_by('-created_date')
-        elif param_lower == 'null' or param_lower == 'unknown':
+        elif param_lower in ['null', 'unknown']:
             return queryset.filter(is_active__isnull=True).order_by('-created_date')
-        
+
         own_param = self.request.query_params.get('own')
-        if own_param or own_param.lower() == 'true':
+        if own_param and own_param.lower() == 'true':
             queryset = queryset.filter(user=self.request.user)
 
         return queryset.filter(is_active=True).order_by('-created_date')
+
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
