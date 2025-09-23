@@ -26,7 +26,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         if self.request.user.is_superuser:
-            serializer.save(user=self.request.user, is_active=True)
+            serializer.save(user=self.request.user, is_active=None)
         else:
             serializer.save(user=self.request.user)
     
