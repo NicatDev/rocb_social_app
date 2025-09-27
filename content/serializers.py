@@ -21,8 +21,17 @@ class LikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ['id', 'user', 'post', 'created_date']
 
+class SimpleUserSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.ImageField(source='profile.profile_picture', read_only=True)
+
+    class Meta:
+        model = User
+        # Frontend-də ehtiyacımız olan sahələri müəyyən edirik
+        fields = ['id', 'first_name', 'last_name', 'profile_picture']
+        
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
+    userprofile = SimpleUserSerializer(read_only=True) 
     reviews = ReviewSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     liked_by_user = serializers.SerializerMethodField()
@@ -33,7 +42,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = [
-            'id', 'user', 'content', 'image', 'file', 'is_active', 
+            'id', 'user', 'content', 'image', 'file', 'is_active', 'userprofile',
             'created_date', 'tags', 'reviews', 'review_count', 'like_count', 'liked_by_user'
         ]
     
