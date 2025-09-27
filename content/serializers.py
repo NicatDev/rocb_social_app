@@ -31,7 +31,6 @@ class SimpleUserSerializer(serializers.ModelSerializer):
         
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
-    userprofile = SimpleUserSerializer(source='user', read_only=True) 
     reviews = ReviewSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     liked_by_user = serializers.SerializerMethodField()
@@ -42,7 +41,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = [
-            'id', 'user', 'content', 'image', 'file', 'is_active', 'userprofile',
+            'id', 'user', 'content', 'image', 'file', 'is_active', 
             'created_date', 'tags', 'reviews', 'review_count', 'like_count', 'liked_by_user'
         ]
     

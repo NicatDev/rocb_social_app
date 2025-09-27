@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import viewsets, permissions
-from .models import Profile
-from .serializers import ProfileSerializer, RegistrationSerializer, PublicProfileSerializer
+from .models import Profile, User
+from .serializers import ProfileSerializer, RegistrationSerializer, ProfileDetailSerializer
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -46,18 +46,17 @@ class RegistrationView(APIView):
         }, status=status.HTTP_201_CREATED)
         
 
-class PublicProfileViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Profile.objects.select_related("user").all()
-    serializer_class = PublicProfileSerializer
-    permission_classes = [permissions.IsAuthenticated] 
+class ProfileByUsernameAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
+    def get(self, request, username):
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Öz profilinə baxanda count artmasın
-        if instance.user != request.user:
-            instance.count = instance.count + 1
-            instance.save(update_fields=["count"])
+        # Profile yoxdursa yarat
+        profile, created = Profile.objects.get_or_create(user=user)
 
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        serializer = ProfileDetailSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
