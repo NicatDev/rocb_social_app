@@ -31,7 +31,7 @@ class SimpleUserSerializer(serializers.ModelSerializer):
         
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
-    userprofile = SimpleUserSerializer(read_only=True) 
+    userprofile = SimpleUserSerializer(source='user', read_only=True) 
     reviews = ReviewSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     liked_by_user = serializers.SerializerMethodField()
