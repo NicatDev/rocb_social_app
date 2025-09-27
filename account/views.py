@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import viewsets, permissions
 from .models import Profile
-from .serializers import ProfileSerializer, RegistrationSerializer
+from .serializers import ProfileSerializer, RegistrationSerializer, PublicProfileSerializer
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -44,3 +44,20 @@ class RegistrationView(APIView):
             "user_id": user.id,
             "username": user.username
         }, status=status.HTTP_201_CREATED)
+        
+
+class PublicProfileViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Profile.objects.select_related("user").all()
+    serializer_class = PublicProfileSerializer
+    permission_classes = [permissions.IsAuthenticated] 
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # Öz profilinə baxanda count artmasın
+        if instance.user != request.user:
+            instance.count = instance.count + 1
+            instance.save(update_fields=["count"])
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
