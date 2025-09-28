@@ -12,13 +12,14 @@ class ProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', required=True)
     first_name = serializers.CharField(source='user.first_name', required=False, allow_blank=True)
     last_name = serializers.CharField(source='user.last_name', required=False, allow_blank=True)
+    username = serializers.CharField(source='user.username', required=False, allow_blank=True)
 
     class Meta:
         model = Profile
         fields = [
-            'id', 'email', 'first_name', 'last_name',
+            'id', 'email','username','first_name', 'last_name',
             'phone_number', 'birth_date', 'profile_picture',
-            'country', 'organization', 'position'
+            'country', 'organization', 'position', 'view_count'
         ]
         read_only_fields = ['id']
 
@@ -30,12 +31,14 @@ class ProfileSerializer(serializers.ModelSerializer):
                 'email': self.initial_data.get('email', instance.user.email),
                 'first_name': self.initial_data.get('first_name', instance.user.first_name),
                 'last_name': self.initial_data.get('last_name', instance.user.last_name),
+                'username': self.initial_data.get('username', instance.user.username),
             }
 
         # User məlumatlarını update et
         instance.user.email = user_data.get('email', instance.user.email)
         instance.user.first_name = user_data.get('first_name', instance.user.first_name)
         instance.user.last_name = user_data.get('last_name', instance.user.last_name)
+        instance.user.username = user_data.get('username', instance.user.username)
         instance.user.save()
 
         # Profile sahələrini update et
@@ -121,3 +124,19 @@ class RegistrationSerializer(serializers.Serializer):
         )
 
         return user
+    
+    
+class ProfileDetailSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source='user.email', read_only=True)
+    first_name = serializers.CharField(source='user.first_name', read_only=True)
+    last_name = serializers.CharField(source='user.last_name', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = [
+            'id', 'email', 'username', 'first_name', 'last_name',
+            'phone_number', 'birth_date', 'profile_picture',
+            'country', 'organization', 'position', 'view_count'
+        ]
+        read_only_fields = fields

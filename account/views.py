@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import viewsets, permissions
-from .models import Profile
-from .serializers import ProfileSerializer, RegistrationSerializer
+from .models import Profile, User
+from .serializers import ProfileSerializer, RegistrationSerializer, ProfileDetailSerializer
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -44,3 +44,20 @@ class RegistrationView(APIView):
             "user_id": user.id,
             "username": user.username
         }, status=status.HTTP_201_CREATED)
+        
+
+class ProfileByUsernameAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, username):
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Profile yoxdursa yarat
+        profile, created = Profile.objects.get_or_create(user=user)
+        profile.view_count += 1
+        profile.save()
+        serializer = ProfileDetailSerializer(profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)

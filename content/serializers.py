@@ -21,6 +21,14 @@ class LikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ['id', 'user', 'post', 'created_date']
 
+class SimpleUserSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.ImageField(source='profile.profile_picture', read_only=True)
+
+    class Meta:
+        model = User
+        # Frontend-də ehtiyacımız olan sahələri müəyyən edirik
+        fields = ['id', 'first_name', 'last_name', 'profile_picture']
+        
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
     reviews = ReviewSerializer(many=True, read_only=True)

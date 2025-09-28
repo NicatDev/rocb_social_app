@@ -11,6 +11,7 @@ class Profile(models.Model):
     country = models.CharField(max_length=100, null=True,blank=True)
     organization = models.CharField(max_length=100, blank=True, null=True)
     position = models.CharField(max_length=100, null=True, blank=True)
+    view_count = models.IntegerField(default=0)
 
 
     def __str__(self):

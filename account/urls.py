@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import LogoutView, ProfileViewSet, RegistrationView
+from .views import LogoutView, ProfileViewSet, RegistrationView, ProfileByUsernameAPIView
 
 router = DefaultRouter()
 router.register(r'profile', ProfileViewSet, basename='profile')
@@ -13,6 +13,6 @@ urlpatterns = [
     path('register/', RegistrationView.as_view(), name='register'),
     # Refresh token
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
+    path('user/<str:username>/', ProfileByUsernameAPIView.as_view(), name='profile-by-username'),
     path('', include(router.urls)),
 ]
