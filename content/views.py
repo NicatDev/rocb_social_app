@@ -29,34 +29,32 @@ class PostViewSet(viewsets.ModelViewSet):
             serializer.save(user=self.request.user, is_active=None)
         else:
             serializer.save(user=self.request.user)
-    
+
     def get_queryset(self):
         queryset = super().get_queryset().annotate(
             review_count=Count('reviews', distinct=True),
             like_count=Count('likes', distinct=True)
         )
 
-        # Əgər detail əməliyyatdısa, filter etmə
         if self.action in ["retrieve", "update", "partial_update", "destroy"]:
             return queryset
 
+        own_param = self.request.query_params.get('own')
         is_active_param = self.request.query_params.get('is_active')
+
+        if own_param and own_param.lower() == 'true':
+            queryset = queryset.filter(user=self.request.user)
 
         if is_active_param is None:
             return queryset.filter(is_active=True).order_by('-created_date')
 
         param_lower = is_active_param.lower()
-
         if param_lower == 'true':
             return queryset.filter(is_active=True).order_by('-created_date')
         elif param_lower == 'false':
             return queryset.filter(is_active=False).order_by('-created_date')
         elif param_lower in ['null', 'unknown']:
             return queryset.filter(is_active__isnull=True).order_by('-created_date')
-
-        own_param = self.request.query_params.get('own')
-        if own_param and own_param.lower() == 'true':
-            queryset = queryset.filter(user=self.request.user)
 
         return queryset.filter(is_active=True).order_by('-created_date')
 
