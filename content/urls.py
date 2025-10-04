@@ -19,6 +19,6 @@ posts_router.register(r'likes', LikeViewSet, basename='post-likes')
 urlpatterns = [
     path('', include(router.urls)),
     path('', include(posts_router.urls)),
-    path('top',TopLikedPostsAPIView, name='top')
+    path('top',TopLikedPostsAPIView.as_view(), name='top')
     
 ]
