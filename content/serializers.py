@@ -81,4 +81,6 @@ class TopPostSerializer(serializers.ModelSerializer):
             'like_count',
             'review_count',
             'created_date',
+            'first_name',
+            'last_name'
         ]
