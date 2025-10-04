@@ -59,5 +59,5 @@ class ProfileByUsernameAPIView(APIView):
         profile, created = Profile.objects.get_or_create(user=user)
         profile.view_count += 1
         profile.save()
-        serializer = ProfileDetailSerializer(profile)
+        serializer = ProfileDetailSerializer(profile, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
