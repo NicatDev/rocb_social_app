@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework_nested import routers
 from .views import (
-    PostViewSet, ReviewViewSet, LikeViewSet, TagViewSet, PostApproveViewSet
+    PostViewSet, ReviewViewSet, LikeViewSet, TagViewSet, PostApproveViewSet, TopLikedPostsAPIView
 )
 
 router = routers.DefaultRouter()
@@ -19,4 +19,6 @@ posts_router.register(r'likes', LikeViewSet, basename='post-likes')
 urlpatterns = [
     path('', include(router.urls)),
     path('', include(posts_router.urls)),
+    path('top',TopLikedPostsAPIView, name='top')
+    
 ]

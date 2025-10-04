@@ -1,10 +1,11 @@
 from .models import Post, Review, Like, Tag
-from .serializers import PostSerializer,PostApproveSerializer, ReviewSerializer, LikeSerializer, TagSerializer
-from rest_framework import viewsets, permissions, serializers
+from .serializers import TopPostSerializer, PostSerializer,PostApproveSerializer, ReviewSerializer, LikeSerializer, TagSerializer
+from rest_framework import viewsets, permissions, serializers, generics
 from django_filters.rest_framework import DjangoFilterBackend 
 from .filters import PostFilter
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
+
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
@@ -94,3 +95,13 @@ class PostApproveViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Post.objects.filter(is_active__isnull=True)
+
+
+class TopLikedPostsAPIView(generics.ListAPIView):
+    serializer_class = TopPostSerializer
+
+    def get_queryset(self):
+        # Annotate posts with like count and order by it
+        return Post.objects.annotate(
+            likes_count=Count('likes')
+        ).order_by('-likes_count', '-created_date')[:3]

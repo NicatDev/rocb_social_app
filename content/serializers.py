@@ -62,3 +62,21 @@ class PostApproveSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'is_active', 'user', 'content', 'image'
         ]
+
+class TopPostSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    profile_picture = serializers.ImageField(source='user.profile.profile_picture', read_only=True)
+    like_count = serializers.IntegerField(source='likes.count', read_only=True)
+    review_count = serializers.IntegerField(source='reviews.count', read_only=True)
+
+    class Meta:
+        model = Post
+        fields = [
+            'id',
+            'content',
+            'username',
+            'profile_picture',
+            'like_count',
+            'review_count',
+            'created_date',
+        ]
