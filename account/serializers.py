@@ -13,13 +13,15 @@ class ProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name', required=False, allow_blank=True)
     last_name = serializers.CharField(source='user.last_name', required=False, allow_blank=True)
     username = serializers.CharField(source='user.username', required=False, allow_blank=True)
+    is_superuser = serializers.BooleanField(source='user.is_superuser', read_only=True)
 
     class Meta:
         model = Profile
         fields = [
             'id', 'email','username','first_name', 'last_name',
             'phone_number', 'birth_date', 'profile_picture',
-            'country', 'organization', 'position', 'view_count'
+            'country', 'organization', 'position', 'view_count',
+            'is_superuser' 
         ]
         read_only_fields = ['id']
 
