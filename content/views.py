@@ -48,7 +48,7 @@ class PostViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(user=self.request.user)
 
         if user_param:
-            queryset = queryset.filter(user=user_param)
+            queryset = queryset.filter(user__id=user_param)
 
         if is_active_param is None:
             return queryset.filter(is_active=True).order_by('-created_date')
