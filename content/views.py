@@ -6,7 +6,6 @@ from .filters import PostFilter
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
 
-
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -48,7 +47,7 @@ class PostViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(user=self.request.user)
 
         if user_param:
-            queryset = queryset.filter(user__id=user_param)
+            queryset = queryset.filter(user__profile__id=user_param)
 
         if is_active_param is None:
             return queryset.filter(is_active=True).order_by('-created_date')
