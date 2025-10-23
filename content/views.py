@@ -28,7 +28,7 @@ class PostViewSet(viewsets.ModelViewSet):
         if self.request.user.is_superuser:
             serializer.save(user=self.request.user, is_active=None)
         else:
-            serializer.save(user=self.request.user)
+            serializer.save(user=self.request.user, is_active=True)
 
     def get_queryset(self):
         queryset = super().get_queryset().annotate(
